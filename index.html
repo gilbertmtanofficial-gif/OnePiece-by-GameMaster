@@ -3,136 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>One Piece: Grand Line Quiz</title>
+    <title>One Piece: Grand Line Survival</title>
     <style>
-        :root { --gold: #f1c40f; --red: #e74c3c; --blue: #2980b9; --dark: #1a1a1a; --poster: #f3e5ab; }
-        body { font-family: 'Arial Black', sans-serif; margin: 0; background: #000; color: white; overflow: hidden; text-align: center; touch-action: manipulation; }
-        .screen { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 15px; box-sizing: border-box; }
+        :root { --gold: #f1c40f; --blue: #2980b9; --red: #e74c3c; --dark: #1a1a1a; --purp: #8e44ad; }
+        body { font-family: 'Arial Black', sans-serif; margin: 0; background: #000; color: white; text-align: center; overflow: hidden; touch-action: manipulation; }
+        .screen { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; background: radial-gradient(circle, #2c3e50 0%, #000 100%); }
         .active { display: flex !important; }
         
-        /* Welcome Screen */
-        #scr-start { background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://i.imgur.com/mO16S09.jpg') center/cover; }
-        .welcome-box { padding: 30px; border: 5px solid var(--gold); border-radius: 20px; background: rgba(0,0,0,0.8); box-shadow: 0 0 30px var(--gold); }
-        
-        /* Character Selection - Wanted Posters */
-        .char-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
-        .card { background: var(--poster); padding: 10px; border: 4px solid #5d4037; width: 130px; cursor: pointer; color: #5d4037; transition: 0.3s; position: relative; }
-        .card img { width: 100%; height: 110px; object-fit: cover; border: 2px solid #5d4037; }
-        .card b { display: block; font-size: 1.1rem; margin-top: 5px; }
-        .card.selected { border-color: var(--red); transform: scale(1.1); box-shadow: 0 0 20px var(--red); }
+        /* Welcome & Cards */
+        .w-box { background: rgba(0,0,0,0.8); padding: 25px; border: 4px solid var(--gold); border-radius: 20px; box-shadow: 0 0 20px var(--gold); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .card { background: #2c3e50; padding: 15px; border-radius: 15px; border: 3px solid transparent; cursor: pointer; width: 130px; transition: 0.2s; }
+        .card span { font-size: 3rem; display: block; }
+        .card.selected { border-color: var(--gold); background: #34495e; transform: scale(1.05); }
 
         /* Arena */
-        #arena { width: 100%; max-width: 550px; height: 180px; position: relative; background: url('https://i.imgur.com/Z4shDRS.jpg') center/cover; border: 4px solid #fff; border-radius: 20px; overflow: hidden; margin: 10px; }
-        #player { width: 70px; position: absolute; bottom: 10px; left: 20px; z-index: 5; transition: 0.2s; }
-        #enemy { width: 70px; position: absolute; bottom: 10px; right: -90px; z-index: 4; }
+        #arena { width: 100%; max-width: 500px; height: 160px; position: relative; background: linear-gradient(#2980b9, #2c3e50); border: 3px solid white; border-radius: 15px; overflow: hidden; margin: 10px; }
+        #player { font-size: 3.5rem; position: absolute; bottom: 5px; left: 15px; z-index: 5; }
+        #enemy { font-size: 3.5rem; position: absolute; bottom: 5px; right: -80px; z-index: 4; }
 
-        .hp-bar { width: 100%; max-width: 550px; height: 18px; background: #333; border: 2px solid white; border-radius: 10px; overflow: hidden; margin: 5px; }
+        .hp-bar { width: 100%; max-width: 500px; height: 15px; background: #333; border: 1px solid #fff; border-radius: 10px; overflow: hidden; margin: 5px; }
         #hp-fill { width: 100%; height: 100%; background: var(--red); transition: 0.3s; }
         
-        .quiz-box { width: 100%; max-width: 550px; background: white; color: black; padding: 15px; border-radius: 20px; border: 5px solid var(--gold); }
-        .opt { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 10px; background: var(--blue); color: white; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        /* Buttons */
+        .m-btn { padding: 15px 35px; background: var(--gold); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1.2rem; color: #000; }
+        .quiz { width: 100%; max-width: 500px; background: white; color: black; padding: 15px; border-radius: 15px; border: 4px solid var(--gold); }
+        .opt { width: 100%; padding: 10px; margin: 4px 0; border: none; border-radius: 8px; background: var(--blue); color: white; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
         
-        .controls { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
-        .mini-btn { padding: 8px 12px; font-size: 0.7rem; background: #7f8c8d; color: white; border: none; border-radius: 5px; cursor: pointer; }
-        #haki-btn { display: none; background: #8e44ad; color: white; border: 2px solid white; padding: 10px; border-radius: 20px; font-weight: bold; margin-bottom: 5px; cursor: pointer; }
-        .main-btn { padding: 15px 40px; background: var(--gold); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1.3rem; color: #000; }
+        .nav { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
+        .mini { padding: 8px 12px; font-size: 0.7rem; background: #7f8c8d; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        #haki { display: none; background: var(--purp); color: white; border: 2px solid white; padding: 10px; border-radius: 20px; font-weight: bold; margin-bottom: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <audio id="bgm" loop src="https://www.soundjay.com/free-music/iron-man-01.mp3"></audio>
-    <audio id="sfx" src="https://www.soundjay.com/buttons/button-3.mp3"></audio>
-
     <div id="scr-start" class="screen active">
-        <div class="welcome-box">
+        <div class="w-box">
             <h1 style="color:var(--gold); margin:0;">ONE PIECE</h1>
             <h2 style="margin:0 0 20px 0;">QUIZ SURVIVAL</h2>
-            <button class="main-btn" onclick="show('scr-char')">START MISSION</button>
+            <button class="m-btn" onclick="go('scr-char')">START MISSION</button>
         </div>
     </div>
 
     <div id="scr-char" class="screen">
-        <h2 style="color:var(--gold)">SELECT YOUR CAPTAIN</h2>
-        <div class="char-grid">
-            <div class="card" id="c-Luffy" onclick="sel('Luffy','https://i.imgur.com/83u3Z6U.png')">
-                <img src="https://i.imgur.com/83u3Z6U.png" onerror="this.src='https://via.placeholder.com/110?text=🍖'"><b>Luffy</b>
-            </div>
-            <div class="card" id="c-Zoro" onclick="sel('Zoro','https://i.imgur.com/Wv9NqK4.png')">
-                <img src="https://i.imgur.com/Wv9NqK4.png" onerror="this.src='https://via.placeholder.com/110?text=⚔️'"><b>Zoro</b>
-            </div>
-            <div class="card" id="c-Nami" onclick="sel('Nami','https://i.imgur.com/K3p8Z6X.png')">
-                <img src="https://i.imgur.com/K3p8Z6X.png" onerror="this.src='https://via.placeholder.com/110?text=☁️'"><b>Nami</b>
-            </div>
-            <div class="card" id="c-Sanji" onclick="sel('Sanji','https://i.imgur.com/I7eBf0F.png')">
-                <img src="https://i.imgur.com/I7eBf0F.png" onerror="this.src='https://via.placeholder.com/110?text=🔥'"><b>Sanji</b>
-            </div>
+        <h2 style="color:var(--gold)">SELECT CAPTAIN</h2>
+        <div class="grid">
+            <div class="card" id="c-Luffy" onclick="sl('Luffy','🍖')"><span>🍖</span>Luffy</div>
+            <div class="card" id="c-Zoro" onclick="sl('Zoro','⚔️')"><span>⚔️</span>Zoro</div>
+            <div class="card" id="c-Nami" onclick="sl('Nami','☁️')"><span>☁️</span>Nami</div>
+            <div class="card" id="c-Sanji" onclick="sl('Sanji','🔥')"><span>🔥</span>Sanji</div>
         </div>
-        <button id="go-btn" class="main-btn" onclick="start()" style="display:none">SET SAIL!</button>
+        <button id="go-btn" class="m-btn" onclick="start()" style="display:none">SET SAIL!</button>
     </div>
 
     <div id="scr-game" class="screen">
-        <div class="controls">
-            <button class="mini-btn" onclick="start()">RESET</button>
-            <button class="mini-btn" style="background:var(--red)" onclick="location.reload()">TERMINATE</button>
-        </div>
+        <div class="nav"><button class="mini" onclick="start()">RESET</button><button class="mini" style="background:var(--red)" onclick="location.reload()">STOP</button></div>
         <div style="font-weight:bold; color:var(--gold)">Score: <span id="score">0</span></div>
         <div class="hp-bar"><div id="hp-fill"></div></div>
-        <div id="arena">
-            <img id="player" src="" onerror="this.style.display='none'">
-            <img id="enemy" src="https://i.imgur.com/3N5eNlB.png">
-        </div>
-        <button id="haki-btn" onclick="doHaki()">HAKI SKIP (-15 PTS)</button>
-        <div class="quiz-box"><p id="q-txt" style="margin:0 0 10px 0; font-weight:bold;"></p><div id="opts"></div></div>
+        <div id="arena"><div id="player"></div><div id="enemy">🏴‍☠️</div></div>
+        <button id="haki" onclick="hk()">HAKI SKIP (-15 PTS)</button>
+        <div class="quiz"><p id="q-txt" style="margin:0 0 10px 0; font-weight:bold;"></p><div id="opts"></div></div>
     </div>
 
     <script>
-        const qs=[{q:"Fixed amount of money available",a:["Fixed Budget","Fixed Money","Allocation","All"],c:0},{q:"Items bought or sold",a:["Merchandise","Store","Products","Items"],c:0},{q:"Organize data electronically",a:["Database","Variable","Syntax","Programming"],c:0},{q:"Using rows/columns for calculations",a:["Spreadsheet","Calc","Scientific","Code"],c:0},{q:"Examine in detail to understand",a:["Analyze","Delete","Create","Save"],c:0},{q:"Replication of real-life environment",a:["Model","Game","Video","Photo"],c:0},{q:"Math with letters",a:["Formulae","Equation","Formula","All"],c:0},{q:"Representation of real situations",a:["Computer Model","Game","Sheet","DB"],c:0},{q:"Key items in data model",a:["Factors","Numbers","Letters","Symbols"],c:0},{q:"Field descriptions in database",a:["Field heading","Cell ref","Field","Bar"],c:0},{q:"Using images to illustrate",a:["Graphics","Photo","Art","None"],c:0},{q:"Software to simulate applications",a:["Simulator","Browser","Calc","Editor"],c:0},{q:"Chart representing info visually",a:["Infographic","Photo","Art","Icon"],c:0},{q:"Combo of numbers/symbols to process",a:["Formula","Formulae","Equation","Syntax"],c:0},{q:"Rows and columns intersection",a:["Cell","Box","Row","Grid"],c:0},{q:"ID for individual cells",a:["Cell reference","Box","Map","ID"],c:0},{q:"Area where formulas are stored",a:["Formula bar","Task bar","Menu","Side"],c:0},{q:"Group of cells (first to last)",a:["Cell range","Group","Block","Set"],c:0},{q:"What is B2:B8?",a:["Cell range","Ref","ID","Name"],c:0},{q:"Address of individual cell",a:["Cell reference","Map","Link","ID"],c:0},{q:"Headings in spreadsheet",a:["Labels","Titles","Names","All"],c:0},{q:"Square used to copy data",a:["Fill handle","Grab","Box","Tool"],c:0},{q:"Instructions for computers",a:["Software","Flowchart","Syntax","Algorithm"],c:0},{q:"Data goes into computer",a:["Input","Output","Process","Store"],c:0},{q:"Computer calculates/thinks",a:["Processing","Input","Output","Store"],c:0},{q:"Computer gives info",a:["Output","Input","Process","Store"],c:0},{q:"Command to output text",a:["Print","Input","Calc","Var"],c:0},{q:"Running a program",a:["Execute","Run","Play","Sim"],c:0},{q:"Memory location for data",a:["Variable","DB","Store","All"],c:0},{q:"Way computer stores data",a:["Data type","File","Folder","Binary"],c:0},{q:"Numbers with decimals",a:["Float","Integer","String","Bool"],c:0},{q:"Whole numbers",a:["Integer","Float","String","Bool"],c:0},{q:"Another name for Float",a:["Real","Fake","Integer","Text"],c:0},{q:"Python function for user strings",a:["Input()","Output","Print","Type"],c:0},{q:"Ensure correct data type",a:["Casting","Formatting","Saving","Print"],c:0},{q:"Steps to solve a problem",a:["Algorithm","Math","Logic","Code"],c:0},{q:"Removing errors",a:["Debugging","Clean","Sort","Code"],c:0},{q:"Approach to testing program",a:["Test plan","Code","Script","Task"],c:0},{q:"One or more paths based on condition",a:["Selection","Loop","Var","Const"],c:0},{q:"Checked for True/False",a:["Decision","Condition","Path","Else"],c:0},{q:"Python grouping",a:["Indention","Space","Dash","Bracket"],c:0},{q:"What is : symbol?",a:["Colon","Semicolon","Dot","Dash"],c:0},{q:"Compare values",a:["Comparison op","Logic","Bool","Math"],c:0},{q:"Mini-program that repeats",a:["Sub-routine","Main","Script","App"],c:0},{q:"Gathers info from surroundings",a:["Sensor","Mouse","Keys","Screen"],c:0},{q:"Parts you can touch",a:["Hardware","Software","Malware","Firm"],c:0},{q:"Detect movement",a:["Accelerometer","Vibrate","Light","Touch"],c:0},{q:"Manages computer system",a:["System software","App","Util","Game"],c:0},{q:"Manages hardware resources",a:["Operating system","Sec","App","Game"],c:0},{q:"General tasks/fun",a:["Application software","System","Util","Sec"],c:0},{q:"True/False with AND/OR",a:["Boolean logic","Math","String","Float"],c:0},{q:"True only if BOTH are True",a:["AND","OR","NOT","XAND"],c:0},{q:"True if EITHER is True",a:["OR","AND","NOT","XAND"],c:0},{q:"Opposite of input",a:["NOT","OR","AND","XAND"],c:0},{q:"What is IP for?",a:["Identify devices","Store","Send","Web"],c:0},{q:"HTTPS?",a:["Hypertext Transfer Secure","High","Home","Link"],c:0},{q:"Encryption purpose",a:["Secure information","Send","Hack","Compress"],c:0},{q:"LAN vs WAN",a:["Local vs Wide","Fast","Old","None"],c:0},{q:"Padlock icon?",a:["Secure","Slow","Bad","Public"],c:0},{q:"SSL function?",a:["Secure data","Accounts","Speed","Fun"],c:0},{q:"Wired network?",a:["Cables","Satellites","Air","Radio"],c:0},{q:"MicroPython?",a:["Microcontrollers","Web","Servers","Apps"],c:0},{q:"Syntax?",a:["Rules for structure","Writing","Math","Apps"],c:0},{q:"Touch sensor?",a:["Touch","Heat","Light","Shake"],c:0},{q:"Power surge error",a:["Interference","Cut","Boom","None"],c:0},{q:"Microbit button?",a:["Trigger events","Light","Display","Code"],c:0},{q:"Firewall primary function",a:["Monitor/Control traffic","Speed","Burn","Virus"],c:0},{q:"Manages network files",a:["Server","PC","USB","Disk"],c:0},{q:"Media over network",a:["Streaming","Saving","Copy","Move"],c:0},{q:"Messaging software",a:["Messaging service","Email","Chat","Video"],c:0},{q:"Provides web pages",a:["Web server","Game","File","Mail"],c:0},{q:"Manages network",a:["Administrator","User","Guest","Bot"],c:0},{q:"Stores digital data",a:["Hard disk drive","Monitor","Keys","CPU"],c:0},{q:"Locate/Access web",a:["Web browser","Server","App","ID"],c:0},{q:"Webpage address",a:["URL","ID","Link","Home"],c:0},{q:"URL?",a:["Uniform Resource Locator","Link","User","Unit"],c:0},{q:"Unique network address",a:["IP address","Home","ID","MAC"],c:0},{q:"IP?",a:["Internet Protocol","Photo","Power","Internal"],c:0},{q:"No duplicates exist",a:["Unique","Original","Solo","All"],c:0},{q:"Device connection method",a:["Connectivity","Link","Cables","Join"],c:0},{q:"Human-like tasks",a:["Artificial Intelligence","Robot","Code","VR"],c:0},{q:"Translate URL to IP",a:["DNS","IP","URL","Web"],c:0},{q:"DNS?",a:["Domain Name System","Digital","Data","Link"],c:0},{q:"Easily moved",a:["Portable","Fixed","Static","Heavy"],c:0},{q:"Raw facts",a:["Data","Info","Logic","Truth"],c:0},{q:"Data transmitted in time",a:["Bandwidth","Speed","Latency","Flow"],c:0},{q:"Uses radio waves",a:["Wifi/Bluetooth","Cable","Ethernet","Disk"],c:0},{q:"How far data goes",a:["Transmission distance","Reach","Speed","Link"],c:0},{q:"WiFi hardware",a:["WiFi Access Point","Router","Keys","Mouse"],c:0},{q:"Signal interruption",a:["Interference","Lag","Gap","Break"],c:0},{q:"Large list password guess",a:["Brute-force","Ransom","Phish","Hack"],c:0},{q:"Bluetooth hacking",a:["Bluesnarfing","Phishing","Spam","Ads"],c:0},{q:"Large list URL checking",a:["Higher-DNS","Low","Mid","Base"],c:0},{q:"DNS not found",a:["404 error","500","200","101"],c:0},{q:"Content displayed in",a:["Display window","URL bar","Task","Menu"],c:0},{q:"Type URL here",a:["Address bar","Task","Search","Menu"],c:0},{q:"SSL?",a:["Secure Socket Layer","Safe","Speed","Super"],c:0},{q:"Website genuine cert",a:["SSL certificate","Key","ID","Pass"],c:0},{q:"HTTPS icon",a:["Padlock","Star","Cross","Circle"],c:0},{q:"Data rules",a:["Protocol","Law","Order","Step"],c:0},{q:"Scramble data",a:["Encryption","Hacking","Copy","Save"],c:0},{q:"Access without permission",a:["Hacker","User","Admin","Mod"],c:0},{q:"Check correct",a:["Verify","Delete","Move","Stop"],c:0},{q:"Before encryption",a:["Plaintext","Code","Cipher","Binary"],c:0},{q:"After encryption",a:["Ciphertext","Plain","Logic","Data"],c:0},{q:"Two number system",a:["Binary","Decimal","Hex","Oct"],c:0},{q:"Data lost due to error",a:["Corrupted","Saved","Moved","Sync"],c:0},{q:"Increase in power damage",a:["Power surge","Cut","Short","Drop"],c:0},{q:"Nearby device waves",a:["Electrical interference","Noise","Lag","Static"],c:0},{q:"Binary digit short",a:["Bit","Byte","Pixel","Unit"],c:0},{q:"Group of 8 bits",a:["Bytes","Bits","Megs","Gigs"],c:0},{q:"Search other websites",a:["Search engine","Browser","Home","Link"],c:0},{q:"Learn from patterns",a:["Machine Learning","Robot","Code","AI"],c:0}];
+        const qs=[{q:"A fixed amount of money available",a:["Fixed Budget","Fixed Money","Allocation","All"],c:0},{q:"Items bought or sold",a:["Merchandise","Store","Products","Items"],c:0},{q:"Organize data electronically",a:["Database","Variable","Syntax","Programming"],c:0},{q:"Using rows/columns for calculations",a:["Spreadsheet","Calc","Scientific","Code"],c:0},{q:"Examine in detail to understand",a:["Analyze","Delete","Create","Save"],c:0},{q:"Replication of real-life environment",a:["Model","Game","Video","Photo"],c:0},{q:"Math with letters",a:["Formulae","Equation","Formula","All"],c:0},{q:"Representation of real situations",a:["Computer Model","Game","Sheet","DB"],c:0},{q:"Key items in data model",a:["Factors","Numbers","Letters","Symbols"],c:0},{q:"Field descriptions in database",a:["Field heading","Cell ref","Field","Bar"],c:0},{q:"Using images to illustrate",a:["Graphics","Photo","Art","None"],c:0},{q:"Software to simulate applications",a:["Simulator","Browser","Calc","Editor"],c:0},{q:"Chart representing info visually",a:["Infographic","Photo","Art","Icon"],c:0},{q:"Combo of numbers/symbols to process",a:["Formula","Formulae","Equation","Syntax"],c:0},{q:"Rows and columns intersection",a:["Cell","Box","Row","Grid"],c:0},{q:"ID for individual cells",a:["Cell reference","Box","Map","ID"],c:0},{q:"Area where formulas are stored",a:["Formula bar","Task bar","Menu","Side"],c:0},{q:"Group of cells (first to last)",a:["Cell range","Group","Block","Set"],c:0},{q:"What is B2:B8?",a:["Cell range","Ref","ID","Name"],c:0},{q:"Address of individual cell",a:["Cell reference","Map","Link","ID"],c:0},{q:"Headings in spreadsheet",a:["Labels","Titles","Names","All"],c:0},{q:"Square used to copy data",a:["Fill handle","Grab","Box","Tool"],c:0},{q:"Instructions for computers",a:["Software","Flowchart","Syntax","Algorithm"],c:0},{q:"Data goes into computer",a:["Input","Output","Process","Store"],c:0},{q:"Computer calculates/thinks",a:["Processing","Input","Output","Store"],c:0},{q:"Computer gives info",a:["Output","Input","Process","Store"],c:0},{q:"Command to output text",a:["Print","Input","Calc","Var"],c:0},{q:"Running a program",a:["Execute","Run","Play","Sim"],c:0},{q:"Memory location for data",a:["Variable","DB","Store","All"],c:0},{q:"Way computer stores data",a:["Data type","File","Folder","Binary"],c:0},{q:"Numbers with decimals",a:["Float","Integer","String","Bool"],c:0},{q:"Whole numbers",a:["Integer","Float","String","Bool"],c:0},{q:"Another name for Float",a:["Real","Fake","Integer","Text"],c:0},{q:"Python function for user strings",a:["Input()","Output","Print","Type"],c:0},{q:"Ensure correct data type",a:["Casting","Formatting","Saving","Print"],c:0},{q:"Steps to solve a problem",a:["Algorithm","Math","Logic","Code"],c:0},{q:"Removing errors",a:["Debugging","Clean","Sort","Code"],c:0},{q:"Approach to testing program",a:["Test plan","Code","Script","Task"],c:0},{q:"One or more paths based on condition",a:["Selection","Loop","Var","Const"],c:0},{q:"Checked for True/False",a:["Decision","Condition","Path","Else"],c:0},{q:"Python grouping",a:["Indention","Space","Dash","Bracket"],c:0},{q:"What is : symbol?",a:["Colon","Semicolon","Dot","Dash"],c:0},{q:"Compare values",a:["Comparison op","Logic","Bool","Math"],c:0},{q:"Mini-program that repeats",a:["Sub-routine","Main","Script","App"],c:0},{q:"Gathers info from surroundings",a:["Sensor","Mouse","Keys","Screen"],c:0},{q:"Parts you can touch",a:["Hardware","Software","Malware","Firm"],c:0},{q:"Detect movement",a:["Accelerometer","Vibrate","Light","Touch"],c:0},{q:"Manages computer system",a:["System software","App","Util","Game"],c:0},{q:"Manages hardware resources",a:["Operating system","Sec","App","Game"],c:0},{q:"General tasks/fun",a:["Application software","System","Util","Sec"],c:0},{q:"True/False with AND/OR",a:["Boolean logic","Math","String","Float"],c:0},{q:"True only if BOTH are True",a:["AND","OR","NOT","XAND"],c:0},{q:"True if EITHER is True",a:["OR","AND","NOT","XAND"],c:0},{q:"Opposite of input",a:["NOT","OR","AND","XAND"],c:0},{q:"What is IP for?",a:["Identify devices","Store","Send","Web"],c:0},{q:"HTTPS?",a:["Hypertext Transfer Secure","High","Home","Link"],c:0},{q:"Encryption purpose",a:["Secure information","Send","Hack","Compress"],c:0},{q:"LAN vs WAN",a:["Local vs Wide","Fast","Old","None"],c:0},{q:"Padlock icon?",a:["Secure","Slow","Bad","Public"],c:0},{q:"SSL function?",a:["Secure data","Accounts","Speed","Fun"],c:0},{q:"Wired network?",a:["Cables","Satellites","Air","Radio"],c:0},{q:"MicroPython?",a:["Microcontrollers","Web","Servers","Apps"],c:0},{q:"Syntax?",a:["Rules for structure","Writing","Math","Apps"],c:0},{q:"Touch sensor?",a:["Touch","Heat","Light","Shake"],c:0},{q:"Power surge error",a:["Interference","Cut","Boom","None"],c:0},{q:"Microbit button?",a:["Trigger events","Light","Display","Code"],c:0},{q:"Firewall primary function",a:["Monitor/Control traffic","Speed","Burn","Virus"],c:0},{q:"Manages network files",a:["Server","PC","USB","Disk"],c:0},{q:"Media over network",a:["Streaming","Saving","Copy","Move"],c:0},{q:"Messaging software",a:["Messaging service","Email","Chat","Video"],c:0},{q:"Provides web pages",a:["Web server","Game","File","Mail"],c:0},{q:"Manages network",a:["Administrator","User","Guest","Bot"],c:0},{q:"Stores digital data",a:["Hard disk drive","Monitor","Keys","CPU"],c:0},{q:"Locate/Access web",a:["Web browser","Server","App","ID"],c:0},{q:"Webpage address",a:["URL","ID","Link","Home"],c:0},{q:"URL?",a:["Uniform Resource Locator","Link","User","Unit"],c:0},{q:"Unique network address",a:["IP address","Home","ID","MAC"],c:0},{q:"IP?",a:["Internet Protocol","Photo","Power","Internal"],c:0},{q:"No duplicates exist",a:["Unique","Original","Solo","All"],c:0},{q:"Device connection method",a:["Connectivity","Link","Cables","Join"],c:0},{q:"Human-like tasks",a:["Artificial Intelligence","Robot","Code","VR"],c:0},{q:"Translate URL to IP",a:["DNS","IP","URL","Web"],c:0},{q:"DNS?",a:["Domain Name System","Digital","Data","Link"],c:0},{q:"Easily moved",a:["Portable","Fixed","Static","Heavy"],c:0},{q:"Raw facts",a:["Data","Info","Logic","Truth"],c:0},{q:"Data transmitted in time",a:["Bandwidth","Speed","Latency","Flow"],c:0},{q:"Uses radio waves",a:["Wifi/Bluetooth","Cable","Ethernet","Disk"],c:0},{q:"How far data goes",a:["Transmission distance","Reach","Speed","Link"],c:0},{q:"WiFi hardware",a:["WiFi Access Point","Router","Keys","Mouse"],c:0},{q:"Signal interruption",a:["Interference","Lag","Gap","Break"],c:0},{q:"Large list password guess",a:["Brute-force","Ransom","Phish","Hack"],c:0},{q:"Bluetooth hacking",a:["Bluesnarfing","Phishing","Spam","Ads"],c:0},{q:"Large list URL checking",a:["Higher-DNS","Low","Mid","Base"],c:0},{q:"DNS not found",a:["404 error","500","200","101"],c:0},{q:"Content displayed in",a:["Display window","URL bar","Task","Menu"],c:0},{q:"Type URL here",a:["Address bar","Task","Search","Menu"],c:0},{q:"SSL?",a:["Secure Socket Layer","Safe","Speed","Super"],c:0},{q:"Website genuine cert",a:["SSL certificate","Key","ID","Pass"],c:0},{q:"HTTPS icon",a:["Padlock","Star","Cross","Circle"],c:0},{q:"Data rules",a:["Protocol","Law","Order","Step"],c:0},{q:"Scramble data",a:["Encryption","Hacking","Copy","Save"],c:0},{q:"Access without permission",a:["Hacker","User","Admin","Mod"],c:0},{q:"Check correct",a:["Verify","Delete","Move","Stop"],c:0},{q:"Before encryption",a:["Plaintext","Code","Cipher","Binary"],c:0},{q:"After encryption",a:["Ciphertext","Plain","Logic","Data"],c:0},{q:"Two number system",a:["Binary","Decimal","Hex","Oct"],c:0},{q:"Data lost due to error",a:["Corrupted","Saved","Moved","Sync"],c:0},{q:"Increase in power damage",a:["Power surge","Cut","Short","Drop"],c:0},{q:"Nearby device waves",a:["Electrical interference","Noise","Lag","Static"],c:0},{q:"Binary digit short",a:["Bit","Byte","Pixel","Unit"],c:0},{q:"Group of 8 bits",a:["Bytes","Bits","Megs","Gigs"],c:0},{q:"Search other websites",a:["Search engine","Browser","Home","Link"],c:0},{q:"Learn from patterns",a:["Machine Learning","Robot","Code","AI"],c:0}];
 
-        let sc=0, hp=100, act=false, eX=-90, spd=1.5, pI='';
-        const ens=['https://i.imgur.com/3N5eNlB.png','https://i.imgur.com/7p6P49K.png','https://i.imgur.com/VvW3HAt.png'];
+        let s=0,h=100,a=false,x=-80,v=1.5,pI='';
+        const ens=['🏴‍☠️','🦑','🦈','💣'];
 
-        function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
-        function sel(n,i){pI=i;document.querySelectorAll('.card').forEach(c=>c.classList.remove('selected'));document.getElementById('c-'+n).classList.add('selected');document.getElementById('go-btn').style.display='inline-block'}
-        
-        function start(){
-            sc=0; hp=100; act=true; eX=-90; spd=1.5;
-            document.getElementById('player').src=pI;
-            document.getElementById('bgm').play().catch(()=>{});
-            show('scr-game'); updUI(); ask(); loop();
-        }
-
-        function loop(){
-            if(!act) return; eX += spd;
-            if(sc>30)spd=2.2; if(sc>70)spd=3.5;
-            if(eX > 550){ eX=-90; hp-=20; document.getElementById('enemy').src=ens[Math.floor(Math.random()*3)]; }
-            document.getElementById('enemy').style.right=eX+'px';
-            document.getElementById('hp-fill').style.width=hp+'%';
-            if(hp<=0){ act=false; alert("Defeated! Score: "+sc); show('scr-start'); }
-            requestAnimationFrame(loop);
-        }
-
-        function ask(){
-            const qObj=qs[Math.floor(Math.random()*qs.length)];
-            document.getElementById('q-txt').innerText=qObj.q;
-            const o=document.getElementById('opts'); o.innerHTML='';
-            let choices=qObj.a.map((t,i)=>({t,correct:i===qObj.c}));
-            choices.sort(()=>Math.random()-0.5);
-            choices.forEach(c=>{
-                const b=document.createElement('button'); b.className='opt'; b.innerText=c.t;
-                b.onclick=()=>{
-                    document.getElementById('sfx').play();
-                    if(c.correct){sc+=10; eX=-100}else{hp-=10}
-                    updUI(); ask();
-                };
-                o.appendChild(b);
-            });
-        }
-
-        function updUI(){
-            document.getElementById('score').innerText=sc;
-            document.getElementById('haki-btn').style.display=(sc>=15)?'block':'none';
-        }
-        function doHaki(){if(sc>=15){sc-=15;eX=-150;updUI();ask()}}
+        function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+        function sl(n,i){pI=i;document.querySelectorAll('.card').forEach(c=>c.classList.remove('selected'));document.getElementById('c-'+n).classList.add('selected');document.getElementById('go-btn').style.display='inline-block'}
+        function start(){s=0;h=100;a=true;x=-80;v=1.5;document.getElementById('player').innerText=pI;go('scr-game');upd();ask();loop()}
+        function loop(){if(!a)return;x+=v;if(s>30)v=2.2;if(s>70)v=3.5;if(x>500){x=-80;h-=20;document.getElementById('enemy').innerText=ens[Math.floor(Math.random()*4)]}document.getElementById('enemy').style.right=x+'px';document.getElementById('hp-fill').style.width=h+'%';if(h<=0){a=false;alert("The Sea Claimed You! Score: "+s);go('scr-start')}requestAnimationFrame(loop)}
+        function ask(){const o=qs[Math.floor(Math.random()*qs.length)];document.getElementById('q-txt').innerText=o.q;const b=document.getElementById('opts');b.innerHTML='';let ch=o.a.map((t,i)=>({t,correct:i===o.c}));ch.sort(()=>Math.random()-0.5);ch.forEach(c=>{const bt=document.createElement('button');bt.className='opt';bt.innerText=c.t;bt.onclick=()=>{if(c.correct){s+=10;x=-100}else{h-=10}upd();ask()};b.appendChild(bt)})}
+        function upd(){document.getElementById('score').innerText=s;document.getElementById('haki').style.display=(s>=15)?'block':'none'}
+        function hk(){if(s>=15){s-=15;x=-150;upd();ask()}}
     </script>
 </body>
 </html>
