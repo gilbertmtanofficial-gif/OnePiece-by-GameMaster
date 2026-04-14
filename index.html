@@ -1,162 +1,65 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>One Piece: Boss Rush</title><style>
-:root{--gold:#ffcc00;--blue:#0077be;--dark:#0d1117;--hp-green:#2ecc71;--hp-red:#e74c3c;--haki-purp:#8e44ad}
-body{font-family:'Arial Black',sans-serif;margin:0;background:var(--dark);color:white;overflow:hidden;text-align:center;touch-action:manipulation}
-.screen{display:none;height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:10px;box-sizing:border-box}
-.active{display:flex!important}
-/* Map Styling */
-.map-bar{width:90%;max-width:500px;display:flex;justify-content:space-between;margin:10px;background:rgba(255,255,255,0.1);padding:10px;border-radius:50px;position:relative}
-.map-dot{width:15px;height:15px;background:#555;border-radius:50%;border:2px solid #fff;z-index:2}
-.map-dot.passed{background:var(--hp-green)}
-.map-dot.current{background:var(--gold);box-shadow:0 0 10px var(--gold)}
-/* Arena */
-#arena{width:100%;max-width:550px;height:200px;position:relative;background:url('https://i.imgur.com/mO16S09.jpg');background-size:cover;border:4px solid #555;border-radius:15px;margin:10px;overflow:hidden}
-#player{font-size:3.5rem;position:absolute;bottom:10px;left:20px;z-index:5;transition:0.3s}
-#enemy{font-size:3.5rem;position:absolute;bottom:10px;right:20px;z-index:4;transition:0.3s}
-.boss-label{position:absolute;top:5px;right:10px;color:var(--hp-red);font-weight:bold;font-size:1.2rem;display:none;text-shadow:2px 2px #000}
-/* HP Bars */
-.hp-container{width:100%;max-width:550px;margin:5px}
-.bar-outer{width:100%;height:15px;background:#333;border-radius:10px;border:1px solid #fff;overflow:hidden;margin-top:5px}
-.bar-fill{width:100%;height:100%;transition:0.3s}
-#player-hp{background:var(--hp-green)}
-#boss-hp-bar{background:var(--hp-red)}
-/* Quiz */
-.quiz-box{width:100%;max-width:550px;background:white;color:black;padding:15px;border-radius:15px;border:4px solid var(--gold)}
-.opt{width:100%;padding:12px;margin:5px 0;border:none;border-radius:8px;background:var(--blue);color:white;font-weight:bold;cursor:pointer;font-size:1rem}
-#haki-btn{display:none;background:var(--haki-purp);color:white;padding:10px 20px;border-radius:50px;font-weight:bold;border:2px solid white;cursor:pointer;margin-bottom:5px}
-.main-btn{padding:15px 40px;background:var(--gold);border:none;border-radius:10px;font-weight:bold;cursor:pointer;font-size:1.4rem}
-.awake{filter:drop-shadow(0 0 15px var(--gold)) scale(1.1)}
-</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>One Piece: Quiz Survival</title>
+    <style>
+        :root { --op-gold: #ffcc00; --op-blue: #0077be; --op-dark: #1a252f; --op-red: #e74c3c; }
+        body { font-family: 'Arial Black', sans-serif; margin: 0; background: #000; color: white; overflow: hidden; text-align: center; touch-action: manipulation; }
+        .screen { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 10px; box-sizing: border-box; }
+        .active { display: flex !important; }
+        
+        .char-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .card { background: #2c3e50; padding: 10px; border-radius: 10px; border: 3px solid transparent; cursor: pointer; width: 135px; transition: 0.2s; }
+        .card span { font-size: 3rem; display: block; }
+        .card.selected { border-color: var(--op-gold); background: #34495e; transform: scale(1.05); }
+        
+        #arena { width: 100%; max-width: 500px; height: 180px; position: relative; background: linear-gradient(to bottom, #2980b9, #2c3e50); border-radius: 15px; overflow: hidden; border: 3px solid #555; margin: 10px; }
+        #player-sprite { font-size: 3.5rem; position: absolute; bottom: 10px; left: 15px; z-index: 5; }
+        #enemy-sprite { font-size: 3.5rem; position: absolute; bottom: 10px; right: -70px; z-index: 4; }
+        
+        .hp-bar { width: 100%; max-width: 500px; height: 15px; background: #333; border-radius: 10px; border: 1px solid #fff; overflow: hidden; margin: 5px; }
+        #hp-fill { width: 100%; height: 100%; background: var(--op-red); transition: 0.3s; }
+        
+        .quiz { width: 100%; max-width: 500px; background: white; color: black; padding: 15px; border-radius: 15px; border: 4px solid var(--op-gold); }
+        .opt { width: 100%; padding: 12px; margin: 5px 0; border: none; border-radius: 8px; background: var(--op-blue); color: white; font-weight: bold; cursor: pointer; font-size: 1rem; }
+        
+        #haki-btn { display: none; background: #8e44ad; color: white; padding: 10px; border-radius: 20px; font-weight: bold; border: 2px solid white; cursor: pointer; margin-bottom: 5px; }
+        .main-btn { padding: 15px 40px; background: var(--op-gold); border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1.4rem; color: black; }
+        .game-nav { position: absolute; top: 10px; right: 10px; display: flex; gap: 5px; }
+        .mini-btn { padding: 8px 12px; font-size: 0.8rem; background: #7f8c8d; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
 
-<div id="scr-start" class="screen active">
-    <h1 style="color:var(--gold);font-size:2.5rem;margin:0">ONE PIECE</h1>
-    <h2 style="margin-top:0">GRAND LINE BOSS RUSH</h2>
-    <button class="main-btn" onclick="show('scr-char')">ENTER THE SEA</button>
-</div>
+    <div id="scr-start" class="screen active">
+        <h1 style="color:var(--op-gold); font-size: 2.5rem;">ONE PIECE QUIZ</h1>
+        <button class="main-btn" onclick="show('scr-char')">START ADVENTURE</button>
+    </div>
 
-<div id="scr-char" class="screen">
-    <h2>Choose Your Captain</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:15px">
-        <div onclick="sel('Luffy','🍖')" id="c-Luffy" style="cursor:pointer;background:#2c3e50;padding:20px;border-radius:15px;border:3px solid transparent">
-            <span style="font-size:3rem">🍖</span><p>Luffy</p>
+    <div id="scr-char" class="screen">
+        <h2 style="color:var(--op-gold)">Select Your Captain</h2>
+        <div class="char-grid">
+            <div class="card" id="c-Luffy" onclick="sel('Luffy', '🍖')"><span>🍖</span>Luffy</div>
+            <div class="card" id="c-Zoro" onclick="sel('Zoro', '⚔️')"><span>⚔️</span>Zoro</div>
+            <div class="card" id="c-Nami" onclick="sel('Nami', '☁️')"><span>☁️</span>Nami</div>
+            <div class="card" id="c-Sanji" onclick="sel('Sanji', '🔥')"><span>🔥</span>Sanji</div>
         </div>
-        <div onclick="sel('Zoro','⚔️')" id="c-Zoro" style="cursor:pointer;background:#2c3e50;padding:20px;border-radius:15px;border:3px solid transparent">
-            <span style="font-size:3rem">⚔️</span><p>Zoro</p>
+        <button id="go-btn" class="main-btn" onclick="start()" style="display:none">SET SAIL!</button>
+    </div>
+
+    <div id="scr-game" class="screen">
+        <div class="game-nav">
+            <button class="mini-btn" onclick="start()">RESET</button>
+            <button class="mini-btn" style="background:var(--op-red)" onclick="location.reload()">TERMINATE</button>
         </div>
-    </div>
-    <button id="go-btn" class="main-btn" onclick="start()" style="display:none">SET SAIL!</button>
-</div>
-
-<div id="scr-game" class="screen">
-    <div class="map-bar">
-        <div class="map-dot" id="dot-0"></div><div class="map-dot" id="dot-1"></div>
-        <div class="map-dot" id="dot-2"></div><div class="map-dot" id="dot-3"></div>
-        <div class="map-dot" id="dot-4"></div><div class="map-dot" id="dot-5"></div>
-    </div>
-    
-    <div class="hp-container">
-        <div style="font-size:0.8rem">PLAYER HP</div>
-        <div class="bar-outer"><div id="player-hp" class="bar-fill"></div></div>
-        <div id="boss-label" class="boss-label">BOSS: <span id="boss-name">BUGGY</span></div>
-        <div id="boss-hp-cont" class="bar-outer" style="display:none"><div id="boss-hp-bar" class="bar-fill"></div></div>
+        <div style="font-weight:bold; color:var(--op-gold)">Score: <span id="score">0</span></div>
+        <div class="hp-bar"><div id="hp-fill"></div></div>
+        <div id="arena"><div id="player-sprite"></div><div id="enemy-sprite">🏴‍☠️</div></div>
+        <button id="haki-btn" onclick="doHaki()">HAKI SKIP (-15 PTS)</button>
+        <div class="quiz"><h3 id="q-txt" style="margin:0 0 10px 0; font-size:1rem;"></h3><div id="opts"></div></div>
     </div>
 
-    <div id="arena"><span id="player-icon"></span><span id="enemy-icon">🏴‍☠️</span></div>
-    
-    <button id="haki-btn" onclick="doHaki()">HAKI SKIP</button>
-    <div class="quiz-box"><h3 id="q-txt" style="margin:0 0 10px 0;font-size:1rem"></h3><div id="opts"></div></div>
-    
-    <div style="margin-top:5px">Score: <span id="score">0</span></div>
-</div>
-
-<script>
-const qs=[{q:"Fixed amount of money available",a:["Fixed Budget","Fixed Money","Allocation","All"],c:0},{q:"Items bought or sold",a:["Merchandise","Store","Products","Items"],c:0},{q:"Organize data electronically",a:["Database","Variable","Syntax","Programming"],c:0},{q:"Using rows/columns for calculations",a:["Spreadsheet","Calc","Scientific","Code"],c:0},{q:"Examine in detail to understand",a:["Analyze","Delete","Create","Save"],c:0},{q:"Replication of real-life environment",a:["Model","Game","Video","Photo"],c:0},{q:"Math with letters",a:["Formulae","Equation","Formula","All"],c:0},{q:"Representation of real situations",a:["Computer Model","Game","Sheet","DB"],c:0},{q:"Key data items in a data model",a:["Factors","Numbers","Letters","Symbols"],c:0},{q:"Field descriptions in database",a:["Field heading","Cell ref","Field","Bar"],c:0},{q:"Using images to illustrate",a:["Graphics","Photo","Art","None"],c:0},{q:"Software to simulate applications",a:["Simulator","Browser","Calc","Editor"],c:0},{q:"Chart representing info visually",a:["Infographic","Photo","Art","Icon"],c:0},{q:"Combo of numbers/symbols to process",a:["Formula","Formulae","Equation","Syntax"],c:0},{q:"Rows and columns intersection",a:["Cell","Box","Row","Grid"],c:0},{q:"ID for individual cells",a:["Cell reference","Box","Map","ID"],c:0},{q:"Area where formulas are stored",a:["Formula bar","Task bar","Menu","Side"],c:0},{q:"Group of cells (first to last)",a:["Cell range","Group","Block","Set"],c:0},{q:"What is B2:B8?",a:["Cell range","Ref","ID","Name"],c:0},{q:"Address of individual cell",a:["Cell reference","Map","Link","ID"],c:0},{q:"Headings in spreadsheet",a:["Labels","Titles","Names","All"],c:0},{q:"Square used to copy data",a:["Fill handle","Grab","Box","Tool"],c:0},{q:"Instructions for computers",a:["Software","Flowchart","Syntax","Algorithm"],c:0},{q:"Data goes into computer",a:["Input","Output","Process","Store"],c:0},{q:"Computer calculates/thinks",a:["Processing","Input","Output","Store"],c:0},{q:"Computer gives info",a:["Output","Input","Process","Store"],c:0},{q:"Command to output text",a:["Print","Input","Calc","Var"],c:0},{q:"Running a program",a:["Execute","Run","Play","Sim"],c:0},{q:"Memory location for data",a:["Variable","DB","Store","All"],c:0},{q:"Way computer stores data",a:["Data type","File","Folder","Binary"],c:0},{q:"Numbers with decimals",a:["Float","Integer","String","Bool"],c:0},{q:"Whole numbers",a:["Integer","Float","String","Bool"],c:0},{q:"Another name for Float",a:["Real","Fake","Integer","Text"],c:0},{q:"Python function for user strings",a:["Input()","Output","Print","Type"],c:0},{q:"Ensure correct data type",a:["Casting","Formatting","Saving","Print"],c:0},{q:"Steps to solve a problem",a:["Algorithm","Math","Logic","Code"],c:0},{q:"Removing errors",a:["Debugging","Clean","Sort","Code"],c:0},{q:"Approach to testing program",a:["Test plan","Code","Script","Task"],c:0},{q:"One or more paths based on condition",a:["Selection","Loop","Var","Const"],c:0},{q:"Checked for True/False",a:["Decision","Condition","Path","Else"],c:0},{q:"Python grouping",a:["Indention","Space","Dash","Bracket"],c:0},{q:"What is : symbol?",a:["Colon","Semicolon","Dot","Dash"],c:0},{q:"Compare values",a:["Comparison op","Logic","Bool","Math"],c:0},{q:"Mini-program that repeats",a:["Sub-routine","Main","Script","App"],c:0},{q:"Gathers info from surroundings",a:["Sensor","Mouse","Keys","Screen"],c:0},{q:"Parts you can touch",a:["Hardware","Software","Malware","Firm"],c:0},{q:"Detect movement",a:["Accelerometer","Vibrate","Light","Touch"],c:0},{q:"Manages computer system",a:["System software","App","Util","Game"],c:0},{q:"Manages hardware resources",a:["Operating system","Sec","App","Game"],c:0},{q:"General tasks/fun",a:["Application software","System","Util","Sec"],c:0},{q:"True/False with AND/OR",a:["Boolean logic","Math","String","Float"],c:0},{q:"True only if BOTH are True",a:["AND","OR","NOT","XAND"],c:0},{q:"True if EITHER is True",a:["OR","AND","NOT","XAND"],c:0},{q:"Opposite of input",a:["NOT","OR","AND","XAND"],c:0},{q:"What is IP for?",a:["Identify devices","Store","Send","Web"],c:0},{q:"HTTPS?",a:["Hypertext Transfer Secure","High","Home","Link"],c:0},{q:"Encryption purpose",a:["Secure information","Send","Hack","Compress"],c:0},{q:"LAN vs WAN",a:["Local vs Wide","Fast","Old","None"],c:0},{q:"Padlock icon?",a:["Secure","Slow","Bad","Public"],c:0},{q:"SSL function?",a:["Secure data","Accounts","Speed","Fun"],c:0},{q:"Wired network?",a:["Cables","Satellites","Air","Radio"],c:0},{q:"MicroPython?",a:["Microcontrollers","Web","Servers","Apps"],c:0},{q:"Syntax?",a:["Rules for structure","Writing","Math","Apps"],c:0},{q:"Touch sensor?",a:["Touch","Heat","Light","Shake"],c:0},{q:"Power surge error",a:["Interference","Cut","Boom","None"],c:0},{q:"Microbit button?",a:["Trigger events","Light","Display","Code"],c:0},{q:"Firewall primary function",a:["Monitor/Control traffic","Speed","Burn","Virus"],c:0},{q:"Manages network files",a:["Server","PC","USB","Disk"],c:0},{q:"Media over network",a:["Streaming","Saving","Copy","Move"],c:0},{q:"Messaging software",a:["Messaging service","Email","Chat","Video"],c:0},{q:"Provides web pages",a:["Web server","Game","File","Mail"],c:0},{q:"Manages network",a:["Administrator","User","Guest","Bot"],c:0},{q:"Stores digital data",a:["Hard disk drive","Monitor","Keys","CPU"],c:0},{q:"Locate/Access web",a:["Web browser","Server","App","ID"],c:0},{q:"Webpage address",a:["URL","ID","Link","Home"],c:0},{q:"URL?",a:["Uniform Resource Locator","Link","User","Unit"],c:0},{q:"Unique network address",a:["IP address","Home","ID","MAC"],c:0},{q:"IP?",a:["Internet Protocol","Photo","Power","Internal"],c:0},{q:"No duplicates exist",a:["Unique","Original","Solo","All"],c:0},{q:"Device connection method",a:["Connectivity","Link","Cables","Join"],c:0},{q:"Human-like tasks",a:["Artificial Intelligence","Robot","Code","VR"],c:0},{q:"Translate URL to IP",a:["DNS","IP","URL","Web"],c:0},{q:"DNS?",a:["Domain Name System","Digital","Data","Link"],c:0},{q:"Easily moved",a:["Portable","Fixed","Static","Heavy"],c:0},{q:"Raw facts",a:["Data","Info","Logic","Truth"],c:0},{q:"Data transmitted in time",a:["Bandwidth","Speed","Latency","Flow"],c:0},{q:"Uses radio waves",a:["Wifi/Bluetooth","Cable","Ethernet","Disk"],c:0},{q:"How far data goes",a:["Transmission distance","Reach","Speed","Link"],c:0},{q:"WiFi hardware",a:["WiFi Access Point","Router","Keys","Mouse"],c:0},{q:"Signal interruption",a:["Interference","Lag","Gap","Break"],c:0},{q:"Large list password guess",a:["Brute-force","Ransom","Phish","Hack"],c:0},{q:"Bluetooth hacking",a:["Bluesnarfing","Phishing","Spam","Ads"],c:0},{q:"Large list URL checking",a:["Higher-DNS","Low","Mid","Base"],c:0},{q:"DNS not found",a:["404 error","500","200","101"],c:0},{q:"Content displayed in",a:["Display window","URL bar","Task","Menu"],c:0},{q:"Type URL here",a:["Address bar","Task","Search","Menu"],c:0},{q:"SSL?",a:["Secure Socket Layer","Safe","Speed","Super"],c:0},{q:"Website genuine cert",a:["SSL certificate","Key","ID","Pass"],c:0},{q:"HTTPS icon",a:["Padlock","Star","Cross","Circle"],c:0},{q:"Data rules",a:["Protocol","Law","Order","Step"],c:0},{q:"Scramble data",a:["Encryption","Hacking","Copy","Save"],c:0},{q:"Access without permission",a:["Hacker","User","Admin","Mod"],c:0},{q:"Check correct",a:["Verify","Delete","Move","Stop"],c:0},{q:"Before encryption",a:["Plaintext","Code","Cipher","Binary"],c:0},{q:"After encryption",a:["Ciphertext","Plain","Logic","Data"],c:0},{q:"Two number system",a:["Binary","Decimal","Hex","Oct"],c:0},{q:"Data lost due to error",a:["Corrupted","Saved","Moved","Sync"],c:0},{q:"Increase in power damage",a:["Power surge","Cut","Short","Drop"],c:0},{q:"Nearby device waves",a:["Electrical interference","Noise","Lag","Static"],c:0},{q:"Binary digit short",a:["Bit","Byte","Pixel","Unit"],c:0},{q:"Group of 8 bits",a:["Bytes","Bits","Megs","Gigs"],c:0},{q:"Search other websites",a:["Search engine","Browser","Home","Link"],c:0},{q:"Learn from patterns",a:["Machine Learning","Robot","Code","AI"],c:0}];
-
-let sc=0, hp=100, bHp=100, stage=0, pI='', isBoss=false, awake=false;
-const bosses=[{n:'BUGGY',i:'🤡'},{n:'CROCODILE',i:'🐊'},{n:'AKAINU',i:'🌋'}];
-
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
-function sel(n,i){pI=i;document.querySelectorAll('[id^="c-"]').forEach(c=>c.style.borderColor='transparent');document.getElementById('c-'+n).style.borderColor='var(--gold)';document.getElementById('go-btn').style.display='inline-block'}
-
-function start(){
-    sc=0; hp=100; stage=0; awake=false;
-    document.getElementById('player-icon').innerText=pI;
-    document.getElementById('player-icon').classList.remove('awake');
-    show('scr-game'); updMap(); ask();
-}
-
-function ask(){
-    if(hp<=0){alert("Shipwrecked! Final Score: "+sc); show('scr-start'); return;}
-    
-    // Boss Trigger every 5 questions
-    if(stage > 0 && stage % 5 === 0 && !isBoss){ startBoss(); return; }
-
-    const qObj=qs[Math.floor(Math.random()*qs.length)];
-    document.getElementById('q-txt').innerText=qObj.q;
-    const o=document.getElementById('opts'); o.innerHTML='';
-    
-    let choices=qObj.a.map((text,i)=>({text,correct:i===qObj.c}));
-    choices.sort(()=>Math.random()-0.5);
-
-    choices.forEach(choice=>{
-        const b=document.createElement('button'); b.className='opt'; b.innerText=choice.text;
-        b.onclick=()=>{
-            if(choice.correct){
-                if(isBoss){ bHp-=25; if(bHp<=0) winBoss(); }
-                else{ sc+=10; stage++; updMap(); }
-            }else{
-                hp-=20; if(isBoss) hp-=10; // Extra damage from boss
-            }
-            updUI(); if(!isBoss || (isBoss && bHp > 0)) ask();
-        };
-        o.appendChild(b);
-    });
-}
-
-function startBoss(){
-    isBoss=true; bHp=100;
-    const bData = bosses[Math.floor(stage/5)-1] || bosses[0];
-    document.getElementById('boss-name').innerText = bData.n;
-    document.getElementById('enemy-icon').innerText = bData.i;
-    document.getElementById('boss-label').style.display = 'block';
-    document.getElementById('boss-hp-cont').style.display = 'block';
-    document.getElementById('haki-btn').innerText = "HAKI SKIP (COST: 20)";
-    ask();
-}
-
-function winBoss(){
-    isBoss=false; awake=true;
-    document.getElementById('boss-label').style.display = 'none';
-    document.getElementById('boss-hp-cont').style.display = 'none';
-    document.getElementById('enemy-icon').innerText = '🏴‍☠️';
-    document.getElementById('player-icon').classList.add('awake');
-    document.getElementById('haki-btn').innerText = "HAKI SKIP (COST: 10)";
-    alert("BOSS DEFEATED! Character Awakened!");
-    stage++; updMap(); ask();
-}
-
-function updMap(){
-    const dots = document.querySelectorAll('.map-dot');
-    dots.forEach((d, i) => {
-        d.className = 'map-dot';
-        if(i < Math.floor(stage/2)) d.classList.add('passed');
-        if(i === Math.floor(stage/2)) d.classList.add('current');
-    });
-}
-
-function updUI(){
-    document.getElementById('score').innerText=sc;
-    document.getElementById('player-hp').style.width=hp+'%';
-    document.getElementById('boss-hp-bar').style.width=bHp+'%';
-    document.getElementById('haki-btn').style.display=(sc>=10)?'block':'none';
-}
-
-function doHaki(){
-    let cost = isBoss ? 20 : 10;
-    if(sc >= cost){
-        sc -= cost;
-        updUI(); ask();
-    }else{
-        alert("Not enough Haki (Points)!");
-    }
-}
-</script></body></html>
+    <script>
+        const qs=[{q:"Fixed amount of money available",a:["Fixed Budget","Fixed Money","Allocation","All"],c:0},{q:"Items bought or sold",a:["Merchandise","Store","Products","Items"],c:0},{q:"Organize data electronically",a:["Database","Variable","Syntax","Programming"],c:0},{q:"Using rows/columns for calculations",a:["Spreadshee
